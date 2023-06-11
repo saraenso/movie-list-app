@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movie list</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Arimo&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/reset.css" />
+    <link rel="stylesheet" href="styles/style.css" />
+  </head>
+  <body>
+    <section class="movie-list">
+      <div class="container">
+        <div class="movie-list-inner">
+          <ul class="movie-list-labels">
+            <li class="movie-list-label">
+              <p class="movie-list-label-text">Список фильмов</p>
+            </li>
+            <li class="movie-list-label">
+              <p class="movie-list-label-text">2023</p>
+            </li>
+          </ul>
+
+          <h1 class="movie-list-title">Посмотреть</h1>
+        </div>
+        <div class="movies-wrapper">
+          <div class="movies-wrapper__items">
+            <input
+              class="js-movie-add-input movie-add-input"
+              type="text"
+              placeholder="Добавить фильм"
+            />
+            <button class="js-movie-add-btn movie-add-btn"></button>
+          </div>
+          <div class="movies-scroll-wrapper">
+            <ul class="js-movies movies"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script src="index.js"></script>
+  </body>
+</html>
