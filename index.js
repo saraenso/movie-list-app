@@ -3,55 +3,33 @@ const movieAddInputNode = document.querySelector('.js-movie-add-input');
 const movieAddButtonNode = document.querySelector('.js-movie-add-btn');
 const moviesNode = document.querySelector('.js-movies');
 
+// Массив объектов-фильмов
+let movies = [];
+
 // Функция для сохранения списка фильмов в локальном хранилище
 const saveMoviesToLocalStorage = () => {
-  const movieItems = Array.from(moviesNode.querySelectorAll('.movie'));
-  const movieData = movieItems.map((item) => {
-    const title = item.querySelector('.movie-name').textContent;
-    const isChecked = item.querySelector('.movie-checkbox').checked;
-    return { title, isChecked };
-  });
-  localStorage.setItem('movies', JSON.stringify(movieData));
+  localStorage.setItem('movies', JSON.stringify(movies));
 };
 
 // Функция для восстановления списка фильмов из локального хранилища
 const restoreMoviesFromLocalStorage = () => {
   const storedMovies = localStorage.getItem('movies');
   if (storedMovies) {
-    const movieData = JSON.parse(storedMovies);
-    movieData.forEach((data) => {
-      const { title, isChecked } = data;
-      const listItemHTML = `
-        <li class='movie ${isChecked ? "checked" : ""}'>
-          <div class='movie-inner'>
-            <input class='movie-checkbox' id='checkbox' type='checkbox' ${isChecked ? "checked" : ""} />
-            <label class='movie-name' for='checkbox'>${title}</label>
-          </div>
-          <div class='movie-inner-btn'>
-            <button class='js-movie-remove-btn movie-remove-btn'></button>
-          </div>
-        </li>
-      `;
-      moviesNode.insertAdjacentHTML('beforeend', listItemHTML);
-    });
+    movies = JSON.parse(storedMovies);
+    renderMovies();
   }
 };
 
-// Обработчик события ввода в поле заголовка
-movieAddInputNode.addEventListener('input', () => {
-  const movie = movieAddInputNode.value;
-});
+// Функция для отрисовки списка фильмов
+const renderMovies = () => {
+  moviesNode.innerHTML = '';
 
-// Функция для добавления фильма
-const addMovie = () => {
-  const movieTitle = movieAddInputNode.value.trim(); // Получаем значение фильма из инпута и удаляем лишние пробелы
-
-  if (movieTitle !== '') {
+  movies.forEach((movie) => {
     const listItemHTML = `
-      <li class='movie'>
+      <li class='movie ${movie.isChecked ? "checked" : ""}'>
         <div class='movie-inner'>
-          <input class='movie-checkbox' id='checkbox' type='checkbox' />
-          <label class='movie-name' for='checkbox'>${movieTitle}</label>
+          <input class='movie-checkbox' id='checkbox' type='checkbox' ${movie.isChecked ? "checked" : ""} />
+          <label class='movie-name' for='checkbox'>${movie.title}</label>
         </div>
         <div class='movie-inner-btn'>
           <button class='js-movie-remove-btn movie-remove-btn'></button>
@@ -60,12 +38,31 @@ const addMovie = () => {
     `;
 
     moviesNode.insertAdjacentHTML('beforeend', listItemHTML);
-    saveMoviesToLocalStorage(); // Сохраняем список фильмов в локальном хранилище
+  });
+};
 
-    // Очищаем поле ввода
+// Функция для добавления фильма
+const addMovie = () => {
+  const movieTitle = movieAddInputNode.value.trim();
+
+  if (movieTitle !== '') {
+    const movie = {
+      title: movieTitle,
+      isChecked: false
+    };
+
+    movies.push(movie);
+    saveMoviesToLocalStorage();
+    renderMovies();
+
     movieAddInputNode.value = '';
   }
 };
+
+// Обработчик события ввода в поле заголовка
+movieAddInputNode.addEventListener('input', () => {
+  const movie = movieAddInputNode.value;
+});
 
 // Обработчик события клика на кнопку
 movieAddButtonNode.addEventListener('click', addMovie);
@@ -81,8 +78,10 @@ movieAddInputNode.addEventListener('keydown', (event) => {
 moviesNode.addEventListener('click', (event) => {
   if (event.target.classList.contains('js-movie-remove-btn')) {
     const listItem = event.target.closest('.movie');
-    listItem.remove();
-    saveMoviesToLocalStorage(); // Сохраняем список фильмов в локальном хранилище
+    const movieIndex = Array.from(listItem.parentNode.children).indexOf(listItem);
+    movies.splice(movieIndex, 1);
+    saveMoviesToLocalStorage();
+    renderMovies();
   }
 });
 
@@ -90,8 +89,10 @@ moviesNode.addEventListener('click', (event) => {
 moviesNode.addEventListener('click', (event) => {
   if (event.target.classList.contains('movie-checkbox')) {
     const movieItem = event.target.closest('.movie');
-    movieItem.classList.toggle('checked');
+    const movieIndex = Array.from(movieItem.parentNode.children).indexOf(movieItem);
+    movies[movieIndex].isChecked = !movies[movieIndex].isChecked;
     saveMoviesToLocalStorage();
+    renderMovies();
   }
 });
 
